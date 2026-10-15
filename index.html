@@ -1,0 +1,134 @@
+
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#176b50">
+<meta name="description" content="VěciDokola — bazar pro Prahu. Купуй і продавай речі у Празі.">
+<title>VěciDokola — Bazar Praha</title>
+<style>
+:root{--green:#176b50;--bg:#f5f7f5;--ink:#202923}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px Arial,sans-serif}
+header{background:white;padding:16px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #ddd;position:sticky;top:0}
+.logo{font-size:23px;font-weight:800;color:var(--green)}
+button,select,input,textarea{font:inherit;padding:12px;border:1px solid #ddd;border-radius:10px}
+button{cursor:pointer;background:var(--green);color:white;border:0;font-weight:bold}
+main{max-width:950px;margin:auto;padding:18px}
+.hero{background:#dceee4;border-radius:18px;padding:24px 18px}
+h1{font-size:30px;margin:0 0 10px}
+.search{display:flex;gap:8px;margin-top:18px}
+.search input{width:100%;min-width:0;background:white}
+.categories{display:flex;gap:8px;overflow:auto;padding:16px 0}
+.categories button{white-space:nowrap;background:white;color:#244536;border:1px solid #d5e0d8}
+h2{font-size:21px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.item{background:white;border-radius:14px;overflow:hidden;border:1px solid #e5e9e5}
+.pic{height:115px;background:#e8eee9;display:grid;place-items:center;font-size:45px}
+.details{padding:12px}
+.price{font-weight:800;font-size:20px;color:var(--green);margin:8px 0}
+.small{color:#657269;font-size:13px}
+.item button{width:100%;margin-top:10px}
+#formbox{background:white;padding:18px;border-radius:15px;margin-top:22px}
+#formbox input,#formbox textarea,#formbox select{width:100%;margin:6px 0 12px;background:white}
+footer{text-align:center;padding:30px;color:#657269;font-size:13px}
+@media(min-width:650px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}.pic{height:155px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">♻ VěciDokola</div>
+  <select id="lang" aria-label="Language">
+    <option value="cs">🇨🇿 Česky</option>
+    <option value="uk">🇺🇦 Українська</option>
+  </select>
+</header>
+<main>
+  <section class="hero">
+    <h1 id="headline">Dej věcem druhý život.</h1>
+    <p id="subtitle">Nakupuj a prodávej použité věci v Praze.</p>
+    <div class="search">
+      <input id="q" placeholder="Co hledáš? / Що шукаєш?">
+      <button id="searchBtn">Hledat</button>
+    </div>
+  </section>
+  <div class="categories" id="cats"></div>
+  <h2 id="listingTitle">Nejnovější nabídky</h2>
+  <div class="grid" id="items"></div>
+  <section id="formbox">
+    <h2 id="formTitle">＋ Přidat inzerát</h2>
+    <p class="small" id="formNote">Zkušební verze: inzeráty se ukládají pouze v tomto prohlížeči.</p>
+    <form id="adform">
+      <label id="lTitle" for="title">Název</label>
+      <input id="title" required maxlength="80">
+      <label id="lPrice" for="price">Cena (Kč)</label>
+      <input id="price" type="number" min="0" required>
+      <label id="lCat" for="category">Kategorie</label>
+      <select id="category">
+        <option value="Elektronika">Elektronika / Електроніка</option>
+        <option value="Nářadí">Nářadí / Інструменти</option>
+        <option value="Nábytek">Nábytek / Меблі</option>
+        <option value="Oblečení">Oblečení / Одяг</option>
+        <option value="Děti">Děti / Дитячі товари</option>
+        <option value="Ostatní">Ostatní / Інше</option>
+      </select>
+      <label id="lCity" for="city">Město</label>
+      <input id="city" value="Praha" required>
+      <label id="lDesc" for="desc">Popis</label>
+      <textarea id="desc" rows="3" maxlength="500"></textarea>
+      <button type="submit" id="submitBtn">Přidat inzerát</button>
+    </form>
+    <p id="notice" role="status"></p>
+  </section>
+</main>
+<footer>VěciDokola © 2026 · Praha · <span id="footText">Druhý život pro každou věc.</span></footer>
+<script>
+const translations={
+cs:{headline:"Dej věcem druhý život.",subtitle:"Nakupuj a prodávej použité věci v Praze.",search:"Hledat",placeholder:"Co hledáš?",newest:"Nejnovější nabídky",add:"＋ Přidat inzerát",note:"Zkušební verze: inzeráty se ukládají pouze v tomto prohlížeči.",title:"Název",price:"Cena (Kč)",cat:"Kategorie",city:"Město",desc:"Popis",submit:"Přidat inzerát",contact:"Kontaktovat",empty:"Zatím tu nejsou žádné nabídky.",success:"Inzerát byl přidán do tohoto prohlížeče.",foot:"Druhý život pro každou věc.",cats:["Vše","Elektronika","Nářadí","Nábytek","Oblečení","Děti","Ostatní"]},
+uk:{headline:"Дай речам друге життя.",subtitle:"Купуй і продавай вживані речі у Празі.",search:"Шукати",placeholder:"Що шукаєш?",newest:"Найновіші оголошення",add:"＋ Додати оголошення",note:"Тестова версія: оголошення зберігаються лише в цьому браузері.",title:"Назва",price:"Ціна (крони)",cat:"Категорія",city:"Місто",desc:"Опис",submit:"Додати оголошення",contact:"Контакт",empty:"Поки що оголошень немає.",success:"Оголошення додано в цьому браузері.",foot:"Друге життя для кожної речі.",cats:["Усі","Електроніка","Інструменти","Меблі","Одяг","Дитячі товари","Інше"]}
+};
+const sample=[
+{title:"Vrtací šroubovák",price:600,category:"Nářadí",city:"Praha",icon:"🛠️"},
+{title:"Stolní lampa",price:250,category:"Ostatní",city:"Praha",icon:"💡"},
+{title:"Dětský kočárek",price:1200,category:"Děti",city:"Praha",icon:"👶"},
+{title:"Sluchátka",price:400,category:"Elektronika",city:"Praha",icon:"🎧"}
+];
+let ads=JSON.parse(localStorage.getItem("vd-ads")||"null")||sample;
+let filter="";let selected="Vše";
+const $=id=>document.getElementById(id);
+function render(){
+ const t=translations[$("lang").value];
+ $("headline").textContent=t.headline;$("subtitle").textContent=t.subtitle;
+ $("q").placeholder=t.placeholder;$("searchBtn").textContent=t.search;
+ $("listingTitle").textContent=t.newest;$("formTitle").textContent=t.add;
+ $("formNote").textContent=t.note;$("lTitle").textContent=t.title;
+ $("lPrice").textContent=t.price;$("lCat").textContent=t.cat;
+ $("lCity").textContent=t.city;$("lDesc").textContent=t.desc;
+ $("submitBtn").textContent=t.submit;$("footText").textContent=t.foot;
+ $("cats").innerHTML=t.cats.map((c,i)=>`<button data-cat="${i===0?"":c}">${c}</button>`).join("");
+ $("cats").querySelectorAll("button").forEach(b=>b.onclick=()=>{selected=b.dataset.cat;draw()});
+ draw();
+}
+function draw(){
+ const q=filter.toLowerCase();
+ const shown=ads.filter(a=>(!q||(a.title+" "+a.city+" "+a.category+" "+(a.desc||"")).toLowerCase().includes(q))&&(!selected||selected==="Vše"||selected==="Усі"||a.category===selected||((selected==="Інструменти")&&a.category==="Nářadí")||((selected==="Меблі")&&a.category==="Nábytek")||((selected==="Одяг")&&a.category==="Oblečení")||((selected==="Дитячі товари")&&a.category==="Děti")||((selected==="Інше")&&a.category==="Ostatní")||((selected==="Електроніка")&&a.category==="Elektronika")));
+ $("items").innerHTML=shown.length?shown.map(a=>`<article class="item"><div class="pic">${a.icon||"📦"}</div><div class="details"><strong>${escapeHTML(a.title)}</strong><div class="price">${Number(a.price).toLocaleString("cs-CZ")} Kč</div><div class="small">${escapeHTML(a.city)} · ${escapeHTML(a.category)}</div><p>${escapeHTML(a.desc||"")}</p><button onclick="alert(${JSON.stringify($("lang").value==="uk"?"Зв'язок із продавцем буде додано після підключення акаунтів.":"Kontakt na prodejce doplníme po připojení účtů.")})">${translations[$("lang").value].contact}</button></div></article>`).join(""): `<p>${translations[$("lang").value].empty}</p>`;
+}
+function escapeHTML(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+$("searchBtn").onclick=()=>{filter=$("q").value;draw()};
+$("q").onkeydown=e=>{if(e.key==="Enter"){e.preventDefault();filter=$("q").value;draw()}};
+$("lang").onchange=render;
+$("adform").onsubmit=e=>{
+ e.preventDefault();
+ const a={title:$("title").value.trim(),price:Number($("price").value),category:$("category").value,city:$("city").value.trim(),desc:$("desc").value,icon:"📦"};
+ if(!a.title||!a.city||a.price<0)return;
+ ads.unshift(a);
+ try{localStorage.setItem("vd-ads",JSON.stringify(ads));$("notice").textContent=translations[$("lang").value].success}
+ catch(err){$("notice").textContent="Storage full. Please remove some listings."}
+ $("adform").reset();$("city").value="Praha";filter="";selected="";draw();
+};
+render();
+</script>
+</body>
+</html>
